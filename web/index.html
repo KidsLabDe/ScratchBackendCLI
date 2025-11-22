@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch Login</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .login-form {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: #4d97ff;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4d97ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3d89f0;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .info {
+            background: #fff3cd;
+            color: #856404;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-form">
+        <h1>🐱 Scratch Login</h1>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Benutzername</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Passwort</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" id="submitBtn">Anmelden</button>
+        </form>
+
+        <div id="message"></div>
+
+        <div class="message info">
+            <strong>🔒 Sicherheitshinweis</strong>
+            Dein Passwort wird direkt an Scratch gesendet und nie auf diesem Server gespeichert.
+            Nur dein Session-Token wird übertragen.
+        </div>
+    </div>
+
+    <script src="scratch-auth.js"></script>
+    <script>
+        const auth = new ScratchAuth({
+            backendUrl: 'http://localhost:5000/api/scratch-auth',
+
+            onSuccess: (data) => {
+                showMessage(`Erfolgreich angemeldet als ${data.username}!`, 'success');
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = 'Anmelden';
+            },
+
+            onError: (error) => {
+                showMessage(`Fehler: ${error.message}`, 'error');
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = 'Anmelden';
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = 'Anmelden...';
+
+            try {
+                await auth.login(username, password);
+            } catch (err) {
+                // Error wird durch onError behandelt
+            }
+        });
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = text;
+            msgDiv.className = `message ${type}`;
+        }
+    </script>
+</body>
+</html>
