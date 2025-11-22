@@ -454,7 +454,7 @@ def format_project_info(project: dict) -> str:
 def cmd_login(api: ScratchAPI, args):
     """Login-Befehl"""
     username = args.username or input("Benutzername: ")
-    password = getpass("Passwort: ")
+    password = args.password or getpass("Passwort: ")
 
     if api.login(username, password):
         print("Session wurde gespeichert.")
@@ -574,6 +574,7 @@ Beispiele:
     # Login
     login_parser = subparsers.add_parser("login", help="Bei Scratch anmelden")
     login_parser.add_argument("-u", "--username", help="Benutzername")
+    login_parser.add_argument("-p", "--password", help="Passwort (unsicher, besser interaktiv eingeben)")
 
     # Logout
     subparsers.add_parser("logout", help="Abmelden und Session löschen")
