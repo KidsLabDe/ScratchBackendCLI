@@ -1,6 +1,9 @@
 # Downloads
 downloads/
 
+# Sessions (sensitive data)
+sessions/
+
 # Python
 __pycache__/
 *.py[cod]
